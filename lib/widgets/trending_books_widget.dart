@@ -1,7 +1,10 @@
-import 'package:ebook_store/data.dart';
+import 'package:ebook_store/pages/bloc/ebook_store_bloc.dart';
 import 'package:ebook_store/pages/books_page.dart';
+import 'package:ebook_store/pages/details_book_page.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
+import 'package:ebook_store/widgets/card_book_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TrendingBooksWidget extends StatelessWidget {
   const TrendingBooksWidget({super.key});
@@ -9,15 +12,14 @@ class TrendingBooksWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-      ),
-      child: Column(
-        children: [
-          Row(
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text("Trending books",
                   style: TextStyle(
@@ -35,52 +37,39 @@ class TrendingBooksWidget extends StatelessWidget {
               )
             ],
           ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: size.height * 0.3,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: booksData.length,
-                itemBuilder: (context, index) {
-                  final book = booksData[index];
-                  return Container(
-                    width: size.width * 0.3,
-                    margin: const EdgeInsets.only(right: 16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: size.height * 0.23,
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Image.network(
-                            book['cover'],
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Text(
-                          "by ${book['author']}",
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(book['title'],
-                            style: const TextStyle(
-                                color: AppColors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                overflow: TextOverflow.ellipsis)),
-                      ],
-                    ),
-                  );
-                }),
-          )
-        ],
-      ),
+        ),
+        const SizedBox(height: 12),
+        BlocBuilder<EbookStoreBloc, EbookStoreState>(
+          builder: (context, state) {
+            if (state.booksScreenStatus == BooksScreenStatus.loading) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 42),
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            return SizedBox(
+              height: size.height * 0.31,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.books.length,
+                  itemBuilder: (context, index) {
+                    final book = state.books[index];
+                    return GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return DetailsBookPage(book: book);
+                          }));
+                        },
+                        child: CardBookWidget(book: book, size: size));
+                  }),
+            );
+          },
+        )
+      ],
     );
   }
 }

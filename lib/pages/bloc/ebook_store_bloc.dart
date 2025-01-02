@@ -10,11 +10,11 @@ part 'ebook_store_state.dart';
 const bookUrl =
     'https://lazaro-portfolio-default-rtdb.firebaseio.com/ebook_store';
 const readingUrl =
-    'https://lazaro-portfolio-default-rtdb.firebaseio.com/ebook_store/reading';
+    'https://lazaro-portfolio-default-rtdb.firebaseio.com/ebook_reading';
 const bookmarkUrl =
-    'https://lazaro-portfolio-default-rtdb.firebaseio.com/ebook_store/bookmark';
+    'https://lazaro-portfolio-default-rtdb.firebaseio.com/ebook_bookmark';
 const cartUrl =
-    'https://lazaro-portfolio-default-rtdb.firebaseio.com/ebook_store/cart';
+    'https://lazaro-portfolio-default-rtdb.firebaseio.com/ebook_cart';
 
 class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
   var uuid = const Uuid();
@@ -40,7 +40,9 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
     FetchBooksEvent event,
     Emitter<EbookStoreState> emit,
   ) async {
-    emit(state.copyWith(booksScreenStatus: BooksScreenStatus.loading));
+    emit(state.copyWith(
+      booksScreenStatus: BooksScreenStatus.loading,
+    ));
 
     final response = await dio.get("$bookUrl.json");
     final data = response.data as Map<String, dynamic>?;
@@ -59,10 +61,8 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
         author: book['author'],
         cover: book['cover'],
         description: book['description'],
-        price: book['price'],
+        price: double.parse(book['price'].toString()),
         isTrending: book['isTrending'] ?? false,
-        isFavorite: book['isFavorite'] ?? false,
-        isPurchased: book['isPurchased'] ?? false,
       );
     }).toList();
 
@@ -75,7 +75,16 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
   void _onFetchTrendingBooks(
     FetchTrendingBooksEvent event,
     Emitter<EbookStoreState> emit,
-  ) {}
+  ) {
+    emit(state.copyWith(homeScreenStatus: HomeScreenStatus.loading));
+
+    final trendingBooks = state.books.where((book) => book.isTrending).toList();
+
+    emit(state.copyWith(
+      homeScreenStatus: HomeScreenStatus.success,
+      trendingBooks: trendingBooks,
+    ));
+  }
 
   void _onFetchReadingBooks(
     FetchReadingBooksEvent event,
@@ -95,7 +104,23 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
   void _onAddToBookmarks(
     AddToBookmarksEvent event,
     Emitter<EbookStoreState> emit,
-  ) {}
+  ) async {
+    final book = state.books.firstWhere((book) => book.id == event.id);
+
+    await dio.put("$bookmarkUrl/${book.id}.json", data: {
+      "id": book.id,
+      "title": book.title,
+      "author": book.author,
+      "cover": book.cover,
+      "description": book.description,
+      "price": book.price,
+      "isTrending": book.isTrending,
+    });
+
+    final newBookmarks = [...state.bookmarks, book];
+
+    emit(state.copyWith(bookmarks: newBookmarks));
+  }
 
   void _onRemoveFromBookmarks(
     RemoveFromBookmarksEvent event,

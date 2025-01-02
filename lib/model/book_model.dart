@@ -8,8 +8,7 @@ class BookModel extends Equatable {
   final String description;
   final double price;
   final bool isTrending;
-  final bool isFavorite;
-  final bool isPurchased;
+
   final int quantity;
 
   const BookModel({
@@ -20,8 +19,6 @@ class BookModel extends Equatable {
     required this.description,
     required this.price,
     required this.isTrending,
-    this.isFavorite = false,
-    this.isPurchased = false,
     this.quantity = 1,
   });
 
@@ -33,8 +30,6 @@ class BookModel extends Equatable {
     String? description,
     double? price,
     bool? isTrending,
-    bool? isFavorite,
-    bool? isPurchased,
     int? quantity,
   }) {
     return BookModel(
@@ -45,8 +40,6 @@ class BookModel extends Equatable {
       description: description ?? this.description,
       price: price ?? this.price,
       isTrending: isTrending ?? this.isTrending,
-      isFavorite: isFavorite ?? this.isFavorite,
-      isPurchased: isPurchased ?? this.isPurchased,
       quantity: quantity ?? this.quantity,
     );
   }
@@ -60,7 +53,5 @@ class BookModel extends Equatable {
         description,
         price,
         isTrending,
-        isFavorite,
-        isPurchased,
       ];
 }

@@ -1,10 +1,26 @@
+import 'package:ebook_store/pages/bloc/ebook_store_bloc.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
 import 'package:ebook_store/widgets/search_bar_widget.dart';
 import 'package:ebook_store/widgets/trending_books_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: context.read<EbookStoreBloc>()
+        ..add(FetchBooksEvent())
+        ..add(FetchTrendingBooksEvent()),
+      child: const Body(),
+    );
+  }
+}
+
+class Body extends StatelessWidget {
+  const Body({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +53,7 @@ class HomePage extends StatelessWidget {
       body: const Column(
         children: [
           SearchBarWidget(),
-          SizedBox(height: 16),
+          SizedBox(height: 4),
           TrendingBooksWidget()
         ],
       ),
