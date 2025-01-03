@@ -114,7 +114,6 @@ class DetailsBookPage extends StatelessWidget {
                 ),
                 child: IconButton(
                     onPressed: () => {
-                          print(state.bookmarks.contains(book)),
                           context
                               .read<EbookStoreBloc>()
                               .add(AddToBookmarksEvent(id: book.id))
@@ -144,45 +143,9 @@ class DetailsBookPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                height: size.height * 0.06,
-                width: size.width * 0.55,
-                decoration: BoxDecoration(
-                  color: AppColors.grey,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text("QTY"),
-                    ),
-                    QuantityWidget(initialQuantity: book.quantity)
-                  ],
-                ),
-              ),
-              TextButton(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(AppColors.orange),
-                  shape: WidgetStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  minimumSize: WidgetStateProperty.all(
-                    Size(size.width * 0.3, size.height * 0.06),
-                  ),
-                ),
-                onPressed: () {},
-                child: const Text("Add to cart",
-                    style: TextStyle(color: AppColors.white)),
-              )
-            ],
-          )
+          QuantityWidget(
+            book: book,
+          ),
         ],
       ),
     );

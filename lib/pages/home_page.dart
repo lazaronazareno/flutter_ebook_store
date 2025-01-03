@@ -1,4 +1,5 @@
 import 'package:ebook_store/pages/bloc/ebook_store_bloc.dart';
+import 'package:ebook_store/pages/cart_page.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
 import 'package:ebook_store/widgets/search_bar_widget.dart';
 import 'package:ebook_store/widgets/trending_books_widget.dart';
@@ -38,7 +39,11 @@ class Body extends StatelessWidget {
         ),
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const CartPage();
+                }));
+              },
               icon: const Icon(
                 Icons.shopping_bag_outlined,
                 size: 28,

@@ -8,6 +8,8 @@ enum BookMarkScreenStatus { none, loading, success, error }
 
 enum ReadingScreenStatus { none, loading, success, error }
 
+enum CartScreenStatus { none, loading, success, error }
+
 class EbookStoreState extends Equatable {
   final List<BookModel> books;
   final List<BookModel> trendingBooks;
@@ -20,6 +22,7 @@ class EbookStoreState extends Equatable {
   final AdminScreenStatus adminScreenStatus;
   final BookMarkScreenStatus bookmarksScreenStatus;
   final ReadingScreenStatus readingScreenStatus;
+  final CartScreenStatus cartScreenStatus;
 
   const EbookStoreState({
     required this.books,
@@ -33,6 +36,7 @@ class EbookStoreState extends Equatable {
     required this.adminScreenStatus,
     required this.bookmarksScreenStatus,
     required this.readingScreenStatus,
+    required this.cartScreenStatus,
   });
 
   factory EbookStoreState.initial() {
@@ -48,6 +52,7 @@ class EbookStoreState extends Equatable {
       adminScreenStatus: AdminScreenStatus.none,
       bookmarksScreenStatus: BookMarkScreenStatus.none,
       readingScreenStatus: ReadingScreenStatus.none,
+      cartScreenStatus: CartScreenStatus.none,
     );
   }
 
@@ -63,6 +68,7 @@ class EbookStoreState extends Equatable {
     AdminScreenStatus? adminScreenStatus,
     BookMarkScreenStatus? bookmarksScreenStatus,
     ReadingScreenStatus? readingScreenStatus,
+    CartScreenStatus? cartScreenStatus,
   }) {
     return EbookStoreState(
       books: books ?? this.books,
@@ -77,6 +83,7 @@ class EbookStoreState extends Equatable {
       bookmarksScreenStatus:
           bookmarksScreenStatus ?? this.bookmarksScreenStatus,
       readingScreenStatus: readingScreenStatus ?? this.readingScreenStatus,
+      cartScreenStatus: cartScreenStatus ?? this.cartScreenStatus,
     );
   }
 
@@ -93,5 +100,6 @@ class EbookStoreState extends Equatable {
         adminScreenStatus,
         bookmarksScreenStatus,
         readingScreenStatus,
+        cartScreenStatus,
       ];
 }

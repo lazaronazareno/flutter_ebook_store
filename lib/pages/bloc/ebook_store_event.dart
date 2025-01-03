@@ -43,10 +43,13 @@ class RemoveFromBookmarksEvent extends EbookStoreEvent {
 }
 
 //carrito
+class FetchCartEvent extends EbookStoreEvent {}
+
 class AddToCartEvent extends EbookStoreEvent {
   final String id;
+  final int quantity;
 
-  const AddToCartEvent({required this.id});
+  const AddToCartEvent({required this.id, this.quantity = 1});
 }
 
 class RemoveFromCartEvent extends EbookStoreEvent {
@@ -56,9 +59,10 @@ class RemoveFromCartEvent extends EbookStoreEvent {
 }
 
 class UpdateCartEvent extends EbookStoreEvent {
-  final String id;
+  final BookModel book;
+  final int newQuantity;
 
-  const UpdateCartEvent({required this.id});
+  const UpdateCartEvent({required this.book, required this.newQuantity});
 }
 
 //admin
