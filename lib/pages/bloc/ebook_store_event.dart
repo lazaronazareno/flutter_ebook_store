@@ -28,6 +28,8 @@ class SearchBooksEvent extends EbookStoreEvent {
 }
 
 //favoritos
+class FetchBookmarksEvent extends EbookStoreEvent {}
+
 class AddToBookmarksEvent extends EbookStoreEvent {
   final String id;
 

@@ -114,11 +114,12 @@ class DetailsBookPage extends StatelessWidget {
                 ),
                 child: IconButton(
                     onPressed: () => {
+                          print(state.bookmarks.contains(book)),
                           context
                               .read<EbookStoreBloc>()
                               .add(AddToBookmarksEvent(id: book.id))
                         },
-                    icon: state.bookmarks.contains(book.id)
+                    icon: state.bookmarks.contains(book)
                         ? const Icon(
                             Icons.bookmark,
                             color: AppColors.white,

@@ -26,6 +26,7 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
     on<FetchReadingBooksEvent>(_onFetchReadingBooks);
     on<FetchBookByIdEvent>(_onFetchBookById);
     on<SearchBooksEvent>(_onSearchBooks);
+    on<FetchBookmarksEvent>(_onFetchBookmarks);
     on<AddToBookmarksEvent>(_onAddToBookmarks);
     on<RemoveFromBookmarksEvent>(_onRemoveFromBookmarks);
     on<AddToCartEvent>(_onAddToCart);
@@ -41,7 +42,7 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
     Emitter<EbookStoreState> emit,
   ) async {
     emit(state.copyWith(
-      booksScreenStatus: BooksScreenStatus.loading,
+      homeScreenStatus: HomeScreenStatus.loading,
     ));
 
     final response = await dio.get("$bookUrl.json");
@@ -49,7 +50,7 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
 
     if (data == null) {
       emit(state
-          .copyWith(booksScreenStatus: BooksScreenStatus.success, books: []));
+          .copyWith(homeScreenStatus: HomeScreenStatus.success, books: []));
       return;
     }
 
@@ -67,7 +68,7 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
     }).toList();
 
     emit(state.copyWith(
-      booksScreenStatus: BooksScreenStatus.success,
+      homeScreenStatus: HomeScreenStatus.success,
       books: booksData,
     ));
   }
@@ -76,12 +77,9 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
     FetchTrendingBooksEvent event,
     Emitter<EbookStoreState> emit,
   ) {
-    emit(state.copyWith(homeScreenStatus: HomeScreenStatus.loading));
-
     final trendingBooks = state.books.where((book) => book.isTrending).toList();
 
     emit(state.copyWith(
-      homeScreenStatus: HomeScreenStatus.success,
       trendingBooks: trendingBooks,
     ));
   }
@@ -100,6 +98,40 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
     SearchBooksEvent event,
     Emitter<EbookStoreState> emit,
   ) {}
+
+  void _onFetchBookmarks(
+    FetchBookmarksEvent event,
+    Emitter<EbookStoreState> emit,
+  ) async {
+    emit(state.copyWith(bookmarksScreenStatus: BookMarkScreenStatus.loading));
+
+    final response = await dio.get("$bookmarkUrl.json");
+    final data = response.data as Map<String, dynamic>?;
+
+    if (data == null) {
+      emit(state.copyWith(
+          bookmarksScreenStatus: BookMarkScreenStatus.success, bookmarks: []));
+      return;
+    }
+
+    final booksData = data.entries.map((item) {
+      final book = item.value;
+      return BookModel(
+        id: book['id'],
+        title: book['title'],
+        author: book['author'],
+        cover: book['cover'],
+        description: book['description'],
+        price: double.parse(book['price'].toString()),
+        isTrending: book['isTrending'] ?? false,
+      );
+    }).toList();
+
+    emit(state.copyWith(
+      bookmarksScreenStatus: BookMarkScreenStatus.success,
+      bookmarks: booksData,
+    ));
+  }
 
   void _onAddToBookmarks(
     AddToBookmarksEvent event,
@@ -125,7 +157,14 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
   void _onRemoveFromBookmarks(
     RemoveFromBookmarksEvent event,
     Emitter<EbookStoreState> emit,
-  ) {}
+  ) async {
+    await dio.delete("$bookmarkUrl/${event.id}.json");
+
+    final newBookmarks =
+        state.bookmarks.where((book) => book.id != event.id).toList();
+
+    emit(state.copyWith(bookmarks: newBookmarks));
+  }
 
   void _onAddToCart(
     AddToCartEvent event,

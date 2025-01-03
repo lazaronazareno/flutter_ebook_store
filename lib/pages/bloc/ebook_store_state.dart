@@ -4,7 +4,9 @@ enum HomeScreenStatus { none, loading, success, error }
 
 enum AdminScreenStatus { none, loading, success, error }
 
-enum BooksScreenStatus { none, loading, success, error }
+enum BookMarkScreenStatus { none, loading, success, error }
+
+enum ReadingScreenStatus { none, loading, success, error }
 
 class EbookStoreState extends Equatable {
   final List<BookModel> books;
@@ -16,7 +18,8 @@ class EbookStoreState extends Equatable {
   final List<BookModel> searchBooks;
   final HomeScreenStatus homeScreenStatus;
   final AdminScreenStatus adminScreenStatus;
-  final BooksScreenStatus booksScreenStatus;
+  final BookMarkScreenStatus bookmarksScreenStatus;
+  final ReadingScreenStatus readingScreenStatus;
 
   const EbookStoreState({
     required this.books,
@@ -28,7 +31,8 @@ class EbookStoreState extends Equatable {
     required this.searchBooks,
     required this.homeScreenStatus,
     required this.adminScreenStatus,
-    required this.booksScreenStatus,
+    required this.bookmarksScreenStatus,
+    required this.readingScreenStatus,
   });
 
   factory EbookStoreState.initial() {
@@ -42,7 +46,8 @@ class EbookStoreState extends Equatable {
       searchBooks: [],
       homeScreenStatus: HomeScreenStatus.none,
       adminScreenStatus: AdminScreenStatus.none,
-      booksScreenStatus: BooksScreenStatus.none,
+      bookmarksScreenStatus: BookMarkScreenStatus.none,
+      readingScreenStatus: ReadingScreenStatus.none,
     );
   }
 
@@ -56,7 +61,8 @@ class EbookStoreState extends Equatable {
     List<BookModel>? searchBooks,
     HomeScreenStatus? homeScreenStatus,
     AdminScreenStatus? adminScreenStatus,
-    BooksScreenStatus? booksScreenStatus,
+    BookMarkScreenStatus? bookmarksScreenStatus,
+    ReadingScreenStatus? readingScreenStatus,
   }) {
     return EbookStoreState(
       books: books ?? this.books,
@@ -68,7 +74,9 @@ class EbookStoreState extends Equatable {
       searchBooks: searchBooks ?? this.searchBooks,
       homeScreenStatus: homeScreenStatus ?? this.homeScreenStatus,
       adminScreenStatus: adminScreenStatus ?? this.adminScreenStatus,
-      booksScreenStatus: booksScreenStatus ?? this.booksScreenStatus,
+      bookmarksScreenStatus:
+          bookmarksScreenStatus ?? this.bookmarksScreenStatus,
+      readingScreenStatus: readingScreenStatus ?? this.readingScreenStatus,
     );
   }
 
@@ -83,6 +91,7 @@ class EbookStoreState extends Equatable {
         searchBooks,
         homeScreenStatus,
         adminScreenStatus,
-        booksScreenStatus,
+        bookmarksScreenStatus,
+        readingScreenStatus,
       ];
 }

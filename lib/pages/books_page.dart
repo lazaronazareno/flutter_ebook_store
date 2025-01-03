@@ -36,12 +36,6 @@ class Body extends StatelessWidget {
       ),
       body: BlocBuilder<EbookStoreBloc, EbookStoreState>(
         builder: (context, state) {
-          if (state.booksScreenStatus == BooksScreenStatus.loading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
           if (state.books.isEmpty) {
             return const Center(
               child: Text("No books found"),

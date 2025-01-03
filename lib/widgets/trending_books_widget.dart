@@ -41,7 +41,7 @@ class TrendingBooksWidget extends StatelessWidget {
         const SizedBox(height: 12),
         BlocBuilder<EbookStoreBloc, EbookStoreState>(
           builder: (context, state) {
-            if (state.booksScreenStatus == BooksScreenStatus.loading) {
+            if (state.homeScreenStatus == HomeScreenStatus.loading) {
               return const Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 42),
