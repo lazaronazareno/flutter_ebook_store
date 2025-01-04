@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class QuantityWidget extends StatefulWidget {
   final BookModel book;
-  final isInCart;
+  final bool isInCart;
   const QuantityWidget({
     super.key,
     required this.book,
@@ -71,15 +71,17 @@ class _QuantityWidgetState extends State<QuantityWidget> {
                 ),
               ],
               IconButton(
-                onPressed: () => {
-                  _decrement(),
+                onPressed: () {
+                  _decrement();
                 },
                 icon: const Icon(Icons.remove),
               ),
-              Text(quantity.toString()),
+              Text(quantity.toString(),
+                  style: const TextStyle(
+                      color: AppColors.green, fontWeight: FontWeight.w600)),
               IconButton(
-                onPressed: () => {
-                  _increment(),
+                onPressed: () {
+                  _increment();
                 },
                 icon: const Icon(Icons.add),
               ),

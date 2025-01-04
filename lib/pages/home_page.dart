@@ -28,21 +28,22 @@ class Body extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
-        elevation: 0,
+        scrolledUnderElevation: 0,
         backgroundColor: AppColors.white,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 16),
-          child: Icon(
-            Icons.admin_panel_settings_outlined,
-            size: 30,
-          ),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.admin_panel_settings_outlined,
+                size: 30,
+              )),
         ),
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const CartPage();
-                }));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const CartPage()));
               },
               icon: const Icon(
                 Icons.shopping_bag_outlined,

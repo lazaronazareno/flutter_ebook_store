@@ -246,12 +246,22 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
   void _onRemoveFromCart(
     RemoveFromCartEvent event,
     Emitter<EbookStoreState> emit,
-  ) {}
+  ) async {
+    final book = state.cart.firstWhere((book) => book.id == event.id);
+
+    await dio.delete("$cartUrl/${book.id}.json");
+
+    final updatedCart =
+        state.cart.where((book) => book.id != event.id).toList();
+
+    emit(state.copyWith(cart: updatedCart));
+  }
 
   void _onUpdateCart(
     UpdateCartEvent event,
     Emitter<EbookStoreState> emit,
   ) async {
+    emit(state.copyWith(cartScreenStatus: CartScreenStatus.loading));
     final book = event.book;
 
     final existItemIndex = state.cart.indexWhere((p) => p.id == book.id);
@@ -268,15 +278,11 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
       data: {"quantity": event.newQuantity},
     );
 
-    final updateCart = [...state.cart];
+    final updatedCart = [...state.cart];
+    updatedCart[existItemIndex] = book.copyWith(quantity: event.newQuantity);
 
-    updateCart[existItemIndex] = updatedItem;
-
-    print(updatedItem.quantity);
-    print(state.cart[0].quantity);
-    print(updateCart[0].quantity);
-
-    emit(state.copyWith(cart: updateCart));
+    emit(state.copyWith(
+        cart: updatedCart, cartScreenStatus: CartScreenStatus.success));
   }
 
   void _onAddBook(
