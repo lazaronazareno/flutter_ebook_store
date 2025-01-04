@@ -270,9 +270,6 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
       return;
     }
 
-    final itemProd = state.cart[existItemIndex];
-    final updatedItem = itemProd.copyWith(quantity: event.newQuantity);
-
     await dio.patch(
       "$cartUrl/${book.id}.json",
       data: {"quantity": event.newQuantity},
@@ -288,15 +285,63 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
   void _onAddBook(
     AddBookEvent event,
     Emitter<EbookStoreState> emit,
-  ) {}
+  ) async {
+    final String newBookId = uuid.v1();
+    final BookModel newBook = event.book;
+
+    final data = {
+      "id": newBookId,
+      "title": event.book.title,
+      "author": event.book.author,
+      "cover": event.book.cover,
+      "description": event.book.description,
+      "price": event.book.price,
+      "isTrending": event.book.isTrending,
+    };
+
+    List<BookModel> updatedBooks = [];
+
+    await dio.put("$bookUrl/$newBookId.json", data: data);
+    updatedBooks = [...state.books, newBook];
+
+    emit(state.copyWith(books: updatedBooks));
+  }
 
   void _onUpdateBook(
     UpdateBookEvent event,
     Emitter<EbookStoreState> emit,
-  ) {}
+  ) async {
+    final data = {
+      "id": event.book.id,
+      "title": event.book.title,
+      "author": event.book.author,
+      "cover": event.book.cover,
+      "description": event.book.description,
+      "price": event.book.price,
+      "isTrending": event.book.isTrending,
+    };
+
+    await dio.patch("$bookUrl/${event.book.id}.json", data: data);
+
+    final updatedBooks = state.books.map((item) {
+      if (item.id == event.book.id) {
+        return event.book;
+      }
+      return item;
+    }).toList();
+
+    emit(state.copyWith(books: updatedBooks));
+  }
 
   void _onDeleteBook(
     DeleteBookEvent event,
     Emitter<EbookStoreState> emit,
-  ) {}
+  ) async {
+    await dio.delete("$bookUrl/${event.id}.json");
+
+    final updatedBooks =
+        state.books.where((book) => book.id != event.id).toList();
+
+    emit(state.copyWith(books: updatedBooks));
+  }
 }

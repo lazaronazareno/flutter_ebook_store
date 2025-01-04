@@ -50,6 +50,17 @@ class TrendingBooksWidget extends StatelessWidget {
               );
             }
 
+            if (state.books.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.only(
+                  top: 42,
+                ),
+                child: Center(
+                  child: Text("No Books in trending"),
+                ),
+              );
+            }
+
             return SizedBox(
               height: size.height * 0.31,
               child: ListView.builder(

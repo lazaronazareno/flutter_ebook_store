@@ -1,3 +1,4 @@
+import 'package:ebook_store/pages/admin_page.dart';
 import 'package:ebook_store/pages/bloc/ebook_store_bloc.dart';
 import 'package:ebook_store/pages/cart_page.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
@@ -33,7 +34,10 @@ class Body extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(left: 16),
           child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const AdminPage()));
+              },
               icon: const Icon(
                 Icons.admin_panel_settings_outlined,
                 size: 30,
