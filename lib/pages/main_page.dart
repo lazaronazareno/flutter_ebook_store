@@ -29,8 +29,8 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
       body: _pages[_selectedIndex],
+      backgroundColor: _selectedIndex == 2 ? AppColors.white : AppColors.green,
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),

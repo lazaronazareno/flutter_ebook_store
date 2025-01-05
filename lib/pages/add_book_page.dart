@@ -2,7 +2,6 @@ import 'package:ebook_store/model/book_model.dart';
 import 'package:ebook_store/pages/bloc/ebook_store_bloc.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddBookPage extends StatefulWidget {

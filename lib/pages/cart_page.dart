@@ -1,5 +1,6 @@
 import 'package:ebook_store/model/book_model.dart';
 import 'package:ebook_store/pages/bloc/ebook_store_bloc.dart';
+import 'package:ebook_store/widgets/action_button_widget.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
 import 'package:ebook_store/widgets/quantity_widget.dart';
 import 'package:flutter/material.dart';
@@ -32,72 +33,37 @@ class Body extends StatelessWidget {
           final total = state.cart.fold(0.0, (previousValue, element) {
             return previousValue + element.price * element.quantity;
           });
+
+          if (state.cart.isEmpty) {
+            return const Center(
+              child: Text(
+                "No products in cart",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              state.cart.isEmpty
-                  ? const Center(
-                      child: Text("No products in cart"),
-                    )
-                  : Padding(
-                      padding:
-                          const EdgeInsets.only(right: 20, bottom: 8, top: 4),
-                      child: Text(
-                        "Total: \$${total.toStringAsFixed(2)}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+              Padding(
+                padding: const EdgeInsets.only(right: 20, bottom: 8, top: 4),
+                child: Text(
+                  "Total: \$${total.toStringAsFixed(2)}",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
               Expanded(
                 child: ListView.builder(
                   itemCount: state.cart.length,
                   itemBuilder: (context, index) {
                     final book = state.cart[index];
                     return _itemCart(context, book);
-                    /* return ListTile(
-                      leading: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        
-                        children: [
-                          IconButton(
-                              onPressed: () {
-                                context
-                                    .read<EbookStoreBloc>()
-                                    .add(RemoveFromCartEvent(id: book.id));
-                              },
-                              icon: const Icon(Icons.delete)),
-                          Container(
-                            width: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              image: DecorationImage(
-                                image: NetworkImage(book.cover),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      title: Text(
-                        book.title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(book.author),
-                          QuantityWidget(book: book, isInCart: true),
-                        ],
-                      ),
-                      trailing: Text('\$${book.price * book.quantity}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          )),
-                    ); */
                   },
                 ),
               ),
@@ -110,22 +76,16 @@ class Body extends StatelessWidget {
                   bottom: 8,
                 ),
                 child: state.cart.isNotEmpty
-                    ? GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          width: double.infinity,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: AppColors.orange,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Center(
-                            child: Text("Checkout",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: AppColors.white,
-                                )),
-                          ),
+                    ? SizedBox(
+                        width: double.infinity,
+                        child: ActionButtonWidget(
+                          text: "Checkout",
+                          onPressed: () {
+                            context
+                                .read<EbookStoreBloc>()
+                                .add(CheckoutCartEvent());
+                          },
+                          actionMessage: "Books buyed",
                         ),
                       )
                     : null,

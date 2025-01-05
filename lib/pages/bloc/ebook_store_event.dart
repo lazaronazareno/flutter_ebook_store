@@ -12,7 +12,14 @@ class FetchBooksEvent extends EbookStoreEvent {}
 
 class FetchTrendingBooksEvent extends EbookStoreEvent {}
 
+//reading
 class FetchReadingBooksEvent extends EbookStoreEvent {}
+
+class AddToReadingEvent extends EbookStoreEvent {
+  final String id;
+
+  const AddToReadingEvent({required this.id});
+}
 
 class FetchBookByIdEvent extends EbookStoreEvent {
   final String id;
@@ -64,6 +71,8 @@ class UpdateCartEvent extends EbookStoreEvent {
 
   const UpdateCartEvent({required this.book, required this.newQuantity});
 }
+
+class CheckoutCartEvent extends EbookStoreEvent {}
 
 //admin
 class AddBookEvent extends EbookStoreEvent {

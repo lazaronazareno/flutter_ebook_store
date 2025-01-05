@@ -13,7 +13,7 @@ enum CartScreenStatus { none, loading, success, error }
 class EbookStoreState extends Equatable {
   final List<BookModel> books;
   final List<BookModel> trendingBooks;
-  final List<BookModel> readingBooks;
+  final List<ReadingBookModel> readingBooks;
   final List<BookModel> bookmarks;
   final List<BookModel> cart;
   final List<BookModel> catalogBooks;
@@ -59,7 +59,7 @@ class EbookStoreState extends Equatable {
   EbookStoreState copyWith({
     List<BookModel>? books,
     List<BookModel>? trendingBooks,
-    List<BookModel>? readingBooks,
+    List<ReadingBookModel>? readingBooks,
     List<BookModel>? bookmarks,
     List<BookModel>? cart,
     List<BookModel>? catalogBooks,

@@ -3,6 +3,7 @@ import 'package:ebook_store/pages/books_page.dart';
 import 'package:ebook_store/pages/details_book_page.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
 import 'package:ebook_store/widgets/card_book_widget.dart';
+import 'package:ebook_store/widgets/spinner_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -42,15 +43,13 @@ class TrendingBooksWidget extends StatelessWidget {
         BlocBuilder<EbookStoreBloc, EbookStoreState>(
           builder: (context, state) {
             if (state.homeScreenStatus == HomeScreenStatus.loading) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 42),
-                  child: CircularProgressIndicator(),
-                ),
+              return const Padding(
+                padding: EdgeInsets.only(top: 42),
+                child: SpinnerWidget(),
               );
             }
 
-            if (state.books.isEmpty) {
+            if (state.trendingBooks.isEmpty) {
               return const Padding(
                 padding: EdgeInsets.only(
                   top: 42,
@@ -65,9 +64,9 @@ class TrendingBooksWidget extends StatelessWidget {
               height: size.height * 0.31,
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: state.books.length,
+                  itemCount: state.trendingBooks.length,
                   itemBuilder: (context, index) {
-                    final book = state.books[index];
+                    final book = state.trendingBooks[index];
                     return GestureDetector(
                         onTap: () {
                           Navigator.push(context,

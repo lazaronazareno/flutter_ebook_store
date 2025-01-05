@@ -1,6 +1,7 @@
 import 'package:ebook_store/pages/add_book_page.dart';
 import 'package:ebook_store/pages/bloc/ebook_store_bloc.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
+import 'package:ebook_store/widgets/spinner_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,6 +24,8 @@ class Body extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.white,
+        scrolledUnderElevation: 0,
         title: const Text("Admin Page"),
       ),
       floatingActionButton: FloatingActionButton(
@@ -38,8 +41,8 @@ class Body extends StatelessWidget {
       ),
       body: BlocBuilder<EbookStoreBloc, EbookStoreState>(
         builder: (context, state) {
-          if (state.adminScreenStatus == AdminScreenStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
+          if (state.homeScreenStatus == HomeScreenStatus.loading) {
+            return const Center(child: SpinnerWidget());
           }
 
           if (state.books.isEmpty) {

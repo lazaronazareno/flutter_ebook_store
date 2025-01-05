@@ -1,4 +1,5 @@
 import 'package:ebook_store/pages/bloc/ebook_store_bloc.dart';
+import 'package:ebook_store/pages/details_book_page.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
 import 'package:ebook_store/widgets/card_book_widget.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,15 @@ class Body extends StatelessWidget {
               itemCount: state.books.length,
               itemBuilder: (context, index) {
                 final book = state.books[index];
-                return CardBookWidget(book: book, size: size);
+                return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  DetailsBookPage(book: book)));
+                    },
+                    child: CardBookWidget(book: book, size: size));
               },
             ),
           );

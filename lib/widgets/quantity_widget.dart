@@ -1,5 +1,6 @@
 import 'package:ebook_store/model/book_model.dart';
 import 'package:ebook_store/pages/bloc/ebook_store_bloc.dart';
+import 'package:ebook_store/widgets/action_button_widget.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,27 +90,16 @@ class _QuantityWidgetState extends State<QuantityWidget> {
           ),
         ),
         if (!widget.isInCart)
-          TextButton(
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(AppColors.orange),
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              minimumSize: WidgetStateProperty.all(
-                Size(size.width * 0.3, size.height * 0.06),
-              ),
-            ),
+          ActionButtonWidget(
+            text: "Add to cart",
             onPressed: () {
               context.read<EbookStoreBloc>().add(AddToCartEvent(
                     id: widget.book.id,
                     quantity: quantity,
                   ));
             },
-            child: const Text("Add to cart",
-                style: TextStyle(color: AppColors.white)),
-          )
+            actionMessage: "Added to cart succesfully",
+          ),
       ],
     );
   }

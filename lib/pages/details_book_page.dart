@@ -14,7 +14,9 @@ class DetailsBookPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: AppColors.grey,
       appBar: AppBar(
+        backgroundColor: AppColors.grey,
         toolbarHeight: size.height * 0.1,
         title: const Center(child: Text("Detail Book")),
         actions: [

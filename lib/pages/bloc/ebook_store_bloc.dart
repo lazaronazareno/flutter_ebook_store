@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:ebook_store/model/book_model.dart';
+import 'package:ebook_store/model/reading_book_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
@@ -33,6 +36,8 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
     on<AddToCartEvent>(_onAddToCart);
     on<RemoveFromCartEvent>(_onRemoveFromCart);
     on<UpdateCartEvent>(_onUpdateCart);
+    on<CheckoutCartEvent>(_onCheckoutCart);
+    on<AddToReadingEvent>(_onAddToReading);
     on<AddBookEvent>(_onAddBook);
     on<UpdateBookEvent>(_onUpdateBook);
     on<DeleteBookEvent>(_onDeleteBook);
@@ -68,27 +73,59 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
       );
     }).toList();
 
+    final trendingBooks = booksData.where((book) => book.isTrending).toList();
+
     emit(state.copyWith(
-      homeScreenStatus: HomeScreenStatus.success,
       books: booksData,
+      trendingBooks: trendingBooks,
+      homeScreenStatus: HomeScreenStatus.success,
     ));
   }
 
   void _onFetchTrendingBooks(
     FetchTrendingBooksEvent event,
     Emitter<EbookStoreState> emit,
-  ) {
-    final trendingBooks = state.books.where((book) => book.isTrending).toList();
-
-    emit(state.copyWith(
-      trendingBooks: trendingBooks,
-    ));
-  }
+  ) async {}
 
   void _onFetchReadingBooks(
     FetchReadingBooksEvent event,
     Emitter<EbookStoreState> emit,
-  ) {}
+  ) async {
+    emit(state.copyWith(
+      readingScreenStatus: ReadingScreenStatus.loading,
+    ));
+
+    final response = await dio.get("$readingUrl.json");
+    final data = response.data as Map<String, dynamic>?;
+
+    if (data == null) {
+      emit(state.copyWith(
+          readingScreenStatus: ReadingScreenStatus.success, readingBooks: []));
+      return;
+    }
+
+    final readingBooksData = data.entries.map((item) {
+      final book = item.value;
+      return ReadingBookModel(
+        id: book['id'],
+        title: book['title'],
+        author: book['author'],
+        cover: book['cover'],
+        isTrending: book['isTrending'] ?? false,
+        quantity: book['quantity'],
+        isReading: book['isReading'],
+        currentPage: book['currentPage'],
+        totalPages: book['totalPages'],
+        stars: book['stars'],
+        updatedAt: book['updatedAt'] ?? "",
+      );
+    }).toList();
+
+    emit(state.copyWith(
+      readingBooks: readingBooksData,
+      readingScreenStatus: ReadingScreenStatus.success,
+    ));
+  }
 
   void _onFetchBookById(
     FetchBookByIdEvent event,
@@ -282,10 +319,68 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
         cart: updatedCart, cartScreenStatus: CartScreenStatus.success));
   }
 
+  void _onCheckoutCart(
+    CheckoutCartEvent event,
+    Emitter<EbookStoreState> emit,
+  ) async {
+    emit(state.copyWith(cartScreenStatus: CartScreenStatus.loading));
+
+    final random = Random();
+
+    final data = state.cart.map((book) {
+      final int randomPageNumber = random.nextInt(800) + 80;
+      final int randomStars = random.nextInt(5) + 1;
+      return {
+        "id": book.id,
+        "title": book.title,
+        "author": book.author,
+        "cover": book.cover,
+        "isTrending": book.isTrending,
+        "quantity": book.quantity,
+        "isReading": false,
+        "currentPage": 0,
+        "totalPages": randomPageNumber,
+        "stars": randomStars,
+        "updatedAt": "",
+      };
+    }).toList();
+
+    final readingBooksList = data.map((item) {
+      return ReadingBookModel(
+        id: item["id"].toString(),
+        title: item["title"].toString(),
+        author: item["author"].toString(),
+        cover: item["cover"].toString(),
+        isTrending: bool.parse(item["isTrending"].toString()),
+        quantity: int.parse(item["quantity"].toString()),
+        isReading: bool.parse(item["isReading"].toString()),
+        currentPage: int.parse(item["currentPage"].toString()),
+        totalPages: int.parse(item["totalPages"].toString()),
+        stars: item["stars"] as int,
+        updatedAt: item["updatedAt"].toString(),
+      );
+    }).toList();
+
+    for (var book in data) {
+      await dio.put("$readingUrl/${book["id"]}.json", data: book);
+    }
+
+    for (var book in data) {
+      await dio.delete("$cartUrl/${book["id"]}.json");
+    }
+
+    emit(state.copyWith(
+        readingBooks: readingBooksList,
+        cart: [],
+        cartScreenStatus: CartScreenStatus.success));
+  }
+
   void _onAddBook(
     AddBookEvent event,
     Emitter<EbookStoreState> emit,
   ) async {
+    emit(state.copyWith(homeScreenStatus: HomeScreenStatus.loading));
+
     final String newBookId = uuid.v1();
     final BookModel newBook = event.book;
 
@@ -304,13 +399,22 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
     await dio.put("$bookUrl/$newBookId.json", data: data);
     updatedBooks = [...state.books, newBook];
 
-    emit(state.copyWith(books: updatedBooks));
+    final updatedTrendingBooks = updatedBooks.where((book) {
+      return book.isTrending;
+    }).toList();
+
+    emit(state.copyWith(
+        books: updatedBooks,
+        trendingBooks: updatedTrendingBooks,
+        homeScreenStatus: HomeScreenStatus.success));
   }
 
   void _onUpdateBook(
     UpdateBookEvent event,
     Emitter<EbookStoreState> emit,
   ) async {
+    emit(state.copyWith(homeScreenStatus: HomeScreenStatus.loading));
+
     final data = {
       "id": event.book.id,
       "title": event.book.title,
@@ -330,18 +434,72 @@ class EbookStoreBloc extends Bloc<EbookStoreEvent, EbookStoreState> {
       return item;
     }).toList();
 
-    emit(state.copyWith(books: updatedBooks));
+    final updatedTrendingBooks = updatedBooks.where((book) {
+      return book.isTrending;
+    }).toList();
+
+    emit(state.copyWith(
+        books: updatedBooks,
+        trendingBooks: updatedTrendingBooks,
+        homeScreenStatus: HomeScreenStatus.success));
   }
 
   void _onDeleteBook(
     DeleteBookEvent event,
     Emitter<EbookStoreState> emit,
   ) async {
+    emit(state.copyWith(homeScreenStatus: HomeScreenStatus.loading));
     await dio.delete("$bookUrl/${event.id}.json");
 
     final updatedBooks =
         state.books.where((book) => book.id != event.id).toList();
 
-    emit(state.copyWith(books: updatedBooks));
+    final updatedTrendingBooks = updatedBooks.where((book) {
+      return book.isTrending;
+    }).toList();
+
+    emit(state.copyWith(
+        books: updatedBooks,
+        trendingBooks: updatedTrendingBooks,
+        homeScreenStatus: HomeScreenStatus.success));
+  }
+
+  void _onAddToReading(
+    AddToReadingEvent event,
+    Emitter<EbookStoreState> emit,
+  ) async {
+    emit(state.copyWith(readingScreenStatus: ReadingScreenStatus.loading));
+    final book = state.readingBooks.firstWhere((book) => book.id == event.id);
+
+    final random = Random();
+    final int randomCurrentPageNumber = random.nextInt(book.totalPages) + 0;
+
+    final data = {
+      "id": book.id,
+      "title": book.title,
+      "author": book.author,
+      "cover": book.cover,
+      "isTrending": book.isTrending,
+      "quantity": book.quantity,
+      "isReading": true,
+      "currentPage": randomCurrentPageNumber,
+      "totalPages": book.totalPages,
+      "stars": book.stars,
+      "updatedAt": DateTime.now().toIso8601String(),
+    };
+
+    await dio.put("$readingUrl/${book.id}.json", data: data);
+
+    final newReadingBooks = state.readingBooks.map((item) {
+      if (item.id == book.id) {
+        return book.copyWith(
+            isReading: true, updatedAt: data["updatedAt"].toString());
+      }
+      return item;
+    }).toList();
+
+    emit(state.copyWith(
+        readingBooks: newReadingBooks,
+        readingScreenStatus: ReadingScreenStatus.success));
   }
 }
