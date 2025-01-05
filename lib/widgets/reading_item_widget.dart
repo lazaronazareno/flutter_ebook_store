@@ -73,7 +73,7 @@ class ReadingItemWidget extends StatelessWidget {
           if (!isHomePage) ...[
             Positioned(
               right: 0,
-              bottom: -6,
+              bottom: -4,
               child: ActionButtonWidget(
                 text: book.isReading ? "Reading" : "Start Reading",
                 onPressed: () {

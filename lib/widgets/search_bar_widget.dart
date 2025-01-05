@@ -14,6 +14,7 @@ class SearchBarWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
+        autofocus: false,
         decoration: InputDecoration(
           hintText: 'Search',
           hintStyle: const TextStyle(color: Colors.grey),

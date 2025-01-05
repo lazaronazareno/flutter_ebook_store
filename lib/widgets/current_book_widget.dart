@@ -1,4 +1,5 @@
 import 'package:ebook_store/model/reading_book_model.dart';
+import 'package:ebook_store/pages/reading_page.dart';
 import 'package:ebook_store/widgets/app_colors.dart';
 import 'package:ebook_store/widgets/reading_item_widget.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,8 @@ class CurrentBookWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("Continue Reading",
-                  style: TextStyle(color: AppColors.white)),
+                  style: TextStyle(
+                      color: AppColors.white, fontWeight: FontWeight.bold)),
               Icon(
                 Icons.more_horiz,
                 color: AppColors.white,
@@ -66,9 +68,17 @@ class CurrentBookWidget extends StatelessWidget {
           ),
           SizedBox(
             width: size.width,
-            child: ReadingItemWidget(
-              book: book,
-              isHomePage: true,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ReadingPage()));
+              },
+              child: ReadingItemWidget(
+                book: book,
+                isHomePage: true,
+              ),
             ),
           ),
         ],
